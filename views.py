@@ -33,12 +33,13 @@ url = "http://192.168.0.95"
 #url = "http://192.168.0.237"
 siteAvailable = True
 #Exceptionhandling Roboter nicht erreichbar
-dirname = os.path.dirname(__file__)
-mapFolder = os.path.join(dirname, "static/maps/")
-dbLocation = os.path.join(dirname, "static/maps/messdaten.db")
-curReg = AnfrageVerarbeiter(url)
-png = pngZeichner(mapFolder)
-parser = Parser(mapFolder)
+if urlOk(url):
+    dirname = os.path.dirname(__file__)
+    mapFolder = os.path.join(dirname, "static/maps/")
+    dbLocation = os.path.join(dirname, "static/maps/messdaten.db")
+    curReg = AnfrageVerarbeiter(url)
+    png = pngZeichner(mapFolder)
+    parser = Parser(mapFolder)
 
 ########################################################################################################
 # Routes
