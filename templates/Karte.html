@@ -1,0 +1,32 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+	<div class="row px-5 pt-5">
+	</div>
+	<div class="container">
+		<div id="zoomBox" class="row">
+			<div class="scatter-container jumbotron col-sm-10 col-md-10 col-lg-10" style="background-color: #1c1c1c; overflow: hidden !important;">		
+			</div>
+			<div class="col-sm-2 col-md-2 col-lg-2">
+				<div class="py-2">
+					<button type="button" class="btn btn-outline-light btn-block fa fa-play" onclick="startRobot()" title="Roboter starten"></button>
+				</div>
+				<div class="py-2">
+					<button type="button" class="btn btn-outline-light btn-block fa fa-pause" onclick="pauseRobot()" title="Roboter pausieren"></button>
+				</div>
+				<div class="py-2">
+					<button type="button" class="btn btn-outline-light btn-block fa fa-stop" onclick="stopRobot()" title="Roboter stoppen"></button>
+				</div>
+				<div class="py-2">
+					<button type="button" class="btn btn-outline-light btn-block fa fa-home" onclick="gohomeRobot()" title="Zum Dock fahren"></button>
+				</div>
+				<div class="py-2">
+					<button type="button" class="btn btn-outline-light btn-block fa fa-edit" onclick="insertTestData()" title="Testverschmutzung einfügen"></button>
+				</div>
+				<div class="py-2 mb-5">
+						<input class="btn-block" data-width="150" type="checkbox" data-toggle="toggle" data-on="Sensotdaten" data-off="Raumdarstellung" data-onstyle="light" data-offstyle="dark" data-style="border" id="toggle"  title="Verschmutzungsdaten darstellen">
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

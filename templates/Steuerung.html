@@ -1,0 +1,43 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+    <div class="row px-5 pt-5">
+    </div>
+    <div class="jumbotron shadow-sm p-3 mb-5 rounded" style="background-color: #0a0a0a; margin-top: 3em !important;">
+        <div class="row">
+            <div class="col-md-3 offset-md-3 col-sm-4 offset-sm-2 px-4 py-4">
+                <button id="start" type="button" name="aktion" value="start_cleaning" class="btn btn-outline-light btn-block fa fa-play" onclick="startRobot()" title="Roboter starten"> Start</button>
+            </div>
+            <div class="col-md-3 col-sm-4 px-4 py-4">
+                <button id="pause" type="button" name="aktion" value="pause_cleaning" class="btn btn-outline-light btn-block fa fa-pause" onclick="pauseRobot()" title="Roboter pausieren"> Pause</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 offset-md-3 col-sm-4 offset-sm-2  px-4 py-4">
+                <button id="stop" type="button" name="aktion" value="stop_cleaning" class="btn btn-outline-light btn-block fa fa-stop" onclick="stopRobot()" title="Roboter stoppen"> Stop</button>
+            </div>
+            <div class="col-md-3 col-sm-4 px-4 py-4">
+                <button id="find" type="button" name="aktion" value="find_cleaner" class="btn btn-outline-light btn-block fa fa-search" onclick="findRobot()" title="Roboter finden"> Find</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2 px-4 py-4">
+                <button id="home" type="button" name="aktion" value="find_home" class="btn btn-outline-light btn-block fa fa-home" onclick="gohomeRobot()" title="ZUm Dock fahren"> Home</button>
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron shadow-sm p-3 mb-5 rounded" style="background-color: #0a0a0a;">
+        <div class="btn-group dropup col-md-6 offset-md-3 col-sm-8 offset-sm-2">
+            <button id="fanmode" type="button" class="btn btn-outline-light btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  title="Modus wählen">
+            </button>
+            <div class="dropdown-menu  shadow-lg p-3 mb-5 rounded" style="background-color: #2e2e2e;">
+                <input id="whisper" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="whisper" onclick="setFanToWhisper()" style="background-color: #0a0a0a;" />
+                <input id="quiet" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="quiet" onclick="setFanToQuiet()" style="background-color: #0a0a0a;" />
+                <input id="balanced" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="balanced" onclick="setFanToBalanced()" style="background-color: #0a0a0a;" />
+                <input id="turbo" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="turbo" onclick="setFanToTurbo()" style="background-color: #0a0a0a;" />
+                <input id="max" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="max" onclick="setFanToMax()" style="background-color: #0a0a0a;" />
+                <input id="mop" class="btn btn-outline-light btn-block" type="button" name="fanspeed" value="mop" onclick="setFanToMop()" style="background-color: #0a0a0a;" />
+            </div>
+        </div>
+    </div>
+{% endblock %}
