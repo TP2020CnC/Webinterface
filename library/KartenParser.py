@@ -39,7 +39,8 @@ class Parser:
 #
 # Schmutztoleranz und ausbreitungszerfall
 #
-        self.PRIM_DECAY = 0.8
+        self.PRIM_DECAY = 0.92
+        self.SEC_DECAY = 0.9
         self.TOLERANCE = 9000
 #
 # Konfiguration der Karte
@@ -460,12 +461,12 @@ class Parser:
                                 spot[1] = ((int)(dirt[1]) * self.PRIM_DECAY)
                             primSpots.append(spot)
                     if (test[0] - 2, test[1] - 2) == target or (test[0] + 2, test[1] + 2) == target or (test[0] + 2, test[1] - 2) == target or (test[0] - 2, test[1] + 2) == target:
-                        if ((int)(dirt[1]) * self.PRIM_DECAY * 0.9) > self.TOLERANCE:
+                        if ((int)(dirt[1]) * self.SEC_DECAY) > self.TOLERANCE:
                             if spot[1] != 360:
                                 if spot[1] > dirt[1]:
                                     spot[1] = dirt[1]
                             else:
-                                spot[1] = ((int)(dirt[1]) * self.PRIM_DECAY * 0.9)
+                                spot[1] = ((int)(dirt[1]) * self.SEC_DECAY)
                             primSpots.append(spot)
             parsedMapData["dirt"] = primSpots
         return parsedMapData
