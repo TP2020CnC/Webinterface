@@ -33,13 +33,12 @@ url = "http://192.168.0.95"
 #url = "http://192.168.0.237"
 siteAvailable = True
 #Exceptionhandling Roboter nicht erreichbar
-if urlOk(url):
-    dirname = os.path.dirname(__file__)
-    mapFolder = os.path.join(dirname, "static/maps/")
-    dbLocation = os.path.join(dirname, "static/maps/messdaten.db")
-    curReg = AnfrageVerarbeiter(url)
-    png = pngZeichner(mapFolder)
-    parser = Parser(mapFolder)
+dirname = os.path.dirname(__file__)
+mapFolder = os.path.join(dirname, "static/maps/")
+dbLocation = os.path.join(dirname, "static/maps/messdaten.db")
+curReg = AnfrageVerarbeiter(url)
+png = pngZeichner(mapFolder)
+parser = Parser(mapFolder)
 
 ########################################################################################################
 # Routes
@@ -54,10 +53,9 @@ def Steuerung2():
     if siteAvailable == False:
         return redirect(url_for('Fehler'))
     return render_template(
-        'Steuerung.html',
-        title='Steuerung'
+    'Steuerung.html',
+    title='Steuerung'
     )
-
 
 @app.route('/Karte', methods=['GET'])
 def Karte():
@@ -79,7 +77,6 @@ def Fehler():
         'Fehler.html',
         title='Verbindungsfehler'
     )
-
 @app.route('/api/<string:robot_mode>', methods=['PUT', 'GET', 'POST'])
 def sendInstruction(robot_mode):
     #Wenn Standardroute nicht erreichbar redirect zur Fehlerseite
