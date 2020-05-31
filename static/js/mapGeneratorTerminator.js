@@ -101,6 +101,16 @@ function drawInterval() {
 	}
 }
 
+//Testet, ob Json Daten vorhanden sind
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 //Daten Laden
 function loadData() {
 	//Daten anfragen
@@ -108,6 +118,9 @@ function loadData() {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', `/api/map?t=${timestamp}`, false);
 	xmlHttp.onload = function() {
+		if (isJson(xmlHttp.responseText) == false) {
+			return;
+		}
 		globalMapData = JSON.parse(xmlHttp.responseText);
 		parseData();
 	};
