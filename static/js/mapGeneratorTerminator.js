@@ -322,7 +322,15 @@ function drawDirt(scaleX, scaleY, k) {
 	dirt.forEach((spot) => {
 		const px = scaleX(spot[0][0]);
 		const py = scaleY(spot[0][1]);
-		context.fillStyle = '#e60000';
+		if (dirt[1] > 9700){
+			context.fillStyle = '#e60000';
+		}			
+		else if (dirt[1] > 9500){
+			context.fillStyle = '#ff8614';
+		}
+		else{
+			context.fillStyle = '#f7ff0f';
+		}
 		const center = 1.5 * k;
 		const size = 3 * k;
 		context.fillRect(px - center, py - center, size, size);
