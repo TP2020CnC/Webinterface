@@ -117,7 +117,7 @@ class DatenbankVerwalter:
         task.append("4")
         task.append(self.current_milli_time())
         #task.append(jsonString["millisekunden"])
-        task.append(55)
+        task.append(11000)
         print(task)
         try:
             self.insertData(conn, task)

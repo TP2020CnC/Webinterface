@@ -119,6 +119,7 @@ function loadData() {
 	xmlHttp.open('GET', `/api/map?t=${timestamp}`, false);
 	xmlHttp.onload = function() {
 		if (isJson(xmlHttp.responseText) == false) {
+			setTimeout(loadData, 200);
 			return;
 		}
 		globalMapData = JSON.parse(xmlHttp.responseText);

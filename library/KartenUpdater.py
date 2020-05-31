@@ -44,28 +44,32 @@ class KartenUpdater:
     def current_milli_time(self):
         return int(round(time.time() * 1000))
 
-    def Update(self, repeatCounter):
+    def UpdateJSON(self):
+        try:
+            self.ApiRequest()
+            self.par.BuildJSON(True)
+        except Exception as e:
+            print(e)
+
+    def UpdateDreck(self):
         try:
             self.ApiRequest()
             roboPos = self.par.GetRoboPos()
             self.mds.UpdateDreck(roboPos)
-            if repeatCounter % 10 == 0:
-                print(repeatCounter) # DEBUG
-                self.par.BuildJSON(True)
         except Exception as e:
             print(e)
 
-    def UpdateDebugger(self, repeatCounter):  # DEBUG  # DEBUG  # DEBUG  # DEBUG  # DEBUG
-        try:
-            self.ApiRequest()
-            roboPos = self.par.GetRoboPos()
-            self.mds.UpdateDreckDebug(roboPos)
-            if repeatCounter % 10 == 0:
-                self.par.BuildJsonDebug(True)
-                print(repeatCounter) # DEBUG
-                #self.png.ImageBuilderDebug(True, True)
-        except Exception as e:
-            print(e)
+    # def UpdateDebugger(self, repeatCounter):  # DEBUG  # DEBUG  # DEBUG  # DEBUG  # DEBUG
+    #     try:
+    #         self.ApiRequest()
+    #         roboPos = self.par.GetRoboPos()
+    #         self.mds.UpdateDreckDebug(roboPos)
+    #         if repeatCounter % 10 == 0:
+    #             self.par.BuildJsonDebug(True)
+    #             print(repeatCounter) # DEBUG
+    #             #self.png.ImageBuilderDebug(True, True)
+    #     except Exception as e:
+    #         print(e)
             
 
     def ApiRequest(self):

@@ -25,28 +25,40 @@ def Worker_KartenUpdater(path, url):
     """thread worker function"""
     ku = KartenUpdater(path, url)
     repeatCounter = -1
+    running = False
     while 1:
         repeatCounter += 1
         if _KILL:
             break
         try:
-            ku.UpdateDebugger(repeatCounter)
+            if running: 
+                ku.UpdateDreck()
+            if repeatCounter % 10 == 0:
+                ku.UpdateJSON()
+
+                response = urlopen(url + "/api/current_status")
+                string = response.read().decode('utf-8')
+                currState = json.loads(string) 
+                if currState["human_state"] == "Cleaning":
+                    running = True
+                else:
+                    running = False
         except Exception as e:
             print(e)
     return
 
-def Worker_KartenDebugger(path): # DEBUG # DEBUG # DEBUG 
-    """thread worker function"""
-    kd = KartenDebugger(path)
-    while 1:
-        if _KILL:
-            break
-        try:
-            kd.InsertDebugDirt()
-            time.sleep(0.2)
-        except Exception as e:
-            print(e)
-    return
+# def Worker_KartenDebugger(path): # DEBUG # DEBUG # DEBUG 
+#     """thread worker function"""
+#     kd = KartenDebugger(path)
+#     while 1:
+#         if _KILL:
+#             break
+#         try:
+#             kd.InsertDebugDirt()
+#             time.sleep(0.2)
+#         except Exception as e:
+#             print(e)
+#     return
 
 
 class AnfrageVerarbeiter(object):
@@ -110,8 +122,6 @@ class AnfrageVerarbeiter(object):
             # stoppt Roboter
             elif robot_mode == "stop":
                 requests.put(self.url + "/api/stop_cleaning")
-                # stoppt das erstellen der Json Datei
-                self.StopKartenUpdater()
             elif robot_mode == "pause":
                 requests.put(self.url + "/api/pause_cleaning")
             elif robot_mode == "find":
