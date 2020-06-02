@@ -1,9 +1,24 @@
 
+//
+// Name: Steuerungsseite.js
+// Projekt: FS4V Abschlussprojekt Staubsaugerroboter
+// Schule: Heinrich-Emanuel-Merck-Schule
+// Betrieb: COUNT+CARE
+// Autor: Robin Schepp
+// Erstellt: 2020-05-20
+// Letzte Änderung: 2020-06-2
+//
+// Steuerbefehle laufen im separaten Thread, um zuverlässig zu funktionieren, dies passiert hier
+//
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Steuerungsthreads aufrufen Worker zum Multithreading
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//Worker zum Multithreading
+// Worker lausch auf Message
 self.addEventListener('message', function(e) {
 
+// Funktionen für die Steuerung des Roboters
 
 function startRobot() {
 	var xhr = new XMLHttpRequest();
@@ -102,6 +117,8 @@ function insertTestData() {
 	xhr.send();
 	self.postMessage("loesche");
 }
+
+// Anhand der Daten der Message e.data.cmd... wird die jeweilige Funktion aufgerufen
 
 if (e.data.cmd == "start") {
 	startRobot();

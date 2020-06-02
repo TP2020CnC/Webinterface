@@ -1,3 +1,15 @@
+//
+// Name: KarteZeichnen.js
+// Projekt: FS4V Abschlussprojekt Staubsaugerroboter
+// Schule: Heinrich-Emanuel-Merck-Schule
+// Betrieb: COUNT+CARE
+// Autor: Robin Schepp, Yannik Seitz               
+// Erstellt: 2020-05-20
+// Letzte Änderung: 2020-06-2
+//
+// Hier befinden sich die Funktionen zum erstellen der Karte in einer Vektorgrafik mithilfe eines Canvas Elements.
+//
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //D3 Code
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,11 +63,13 @@ function HueToRGB(h) {
 	};
 }
 /////////////////////////////////////////////////////
+// Variablen zum Debuggen
 var countRefresh = 0;
 var lastRefreshTime;
 var globalMapData = null;
 var dragging = false;
 
+//Für Zeichnung relevante VAriablen werden initialisiert und Zeichnen angestoßen
 function parseData() {
 	if (globalMapData == null) {
 		return;
@@ -95,6 +109,7 @@ function parseData() {
 	//setInterval(loadData, 3000);
 }
 
+// Bedingter Zeichnenaufruf
 function drawInterval() {
 	if (globalMapData != null && dragging == false) {
 		draw(currentTransform);
@@ -118,18 +133,20 @@ function loadData() {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', `/api/map?t=${timestamp}`, false);
 	xmlHttp.onload = function() {
+		// Wenn Response kein richtiger Json-String wird übersprungen und in 200ms neu versucht
 		if (isJson(xmlHttp.responseText) == false) {
 			setTimeout(loadData, 200);
 			return;
 		}
 		globalMapData = JSON.parse(xmlHttp.responseText);
+		// Karte wird gezeichnet
 		parseData();
 	};
 	xmlHttp.send();
 	//mapData = JSON.parse(xmlHttp.responseText);
 }
 
-//Übersetzt Koordinaten
+// Übersetzt Koordinaten
 function TransformCoords(coord, offset_from) {
 	coord = coord / 50;
 	coord = coord - offset_from;
@@ -137,22 +154,19 @@ function TransformCoords(coord, offset_from) {
 	return Math.round(coord);
 }
 
-//Icons
+// Icons geladen
 var d_station = new Image();
 d_station.src = 'static/maps/assets/charger.svg';
 var vacuum = new Image();
 vacuum.src = 'static/maps/assets/robot.svg';
 
+// Attribute gesetzt
 wallColor = '#00ff40';
 ICON_SIZE = 16;
 margin = { top: 1, right: 1, bottom: 1, left: 1 };
 var help = document.getElementById("mapBox");
-// outerWidth = help.width;
-// outerHeight = help.height;
 outerWidth = 500;
 outerHeight = 500;
-// width = outerWidth - margin.left - margin.right;
-// height = outerHeight - margin.top - margin.bottom;
 width = outerWidth;
 height = outerHeight;
 container = d3.select('.scatter-container');
@@ -173,11 +187,15 @@ const canvasChart = container
 	.attr('height', height)
 	.style('margin-left', margin.left + 'px')
 	.style('margin-top', margin.top + 'px')
-	.attr('class', 'canvas-plot ');
+	.attr('class', 'canvas-plot');
 
+// Kontext für Canvas wird erstellt
 const context = canvasChart.node().getContext('2d');
+
+// Daten werden initial geladen
 loadData();
 
+// Es wird gecheckt, ob Dreckdaten angezeigt werden sollen
 function dirtOrNoDirt() {
 	var helper = document.getElementById('toggle');
 	if (helper.checked) {
@@ -215,24 +233,6 @@ function draw(transform) {
 }
 // Initial draw made with no zoom
 draw(d3.zoomIdentity);
-
-// //Testschmutz 
-// function drawTestDust() {
-// 	if (!globalMapData.robot) {
-// 		return
-// 	}
-// 	const scaleX = currentTransform.rescaleX(x);
-// 	const scaleY = currentTransform.rescaleY(y);
-// 	k = currentTransform.k;
-// 	let xRobo = TransformCoords(robot[0], position.left);
-// 	let yRobo = TransformCoords(robot[1], position.top);
-// 	context.fillStyle = '#e60000';
-// 	const px = scaleX(xRobo);
-// 	const py = scaleY(yRobo);
-// 	const center = 0.5 * k;
-// 	const size = 1 * k;
-// 	context.fillRect(px - center, py - center, size, size);
-// }
 
 //Roboterposition
 function drawRobot(scaleX, scaleY, k) {
@@ -316,9 +316,11 @@ function drawPath(scaleX, scaleY, k) {
 
 //Schmutz
 function drawDirt(scaleX, scaleY, k) {
+	// Wenn Schmutzdaten fehlen, wird die Funktion übersprungen
 	if (!globalMapData.dirt) {
 		return;
 	}
+	// Dreckdaten werden gezeichnet
 	dirt.forEach((spot) => {
 		const px = scaleX(spot[0][0]);
 		const py = scaleY(spot[0][1]);
@@ -346,4 +348,5 @@ const zoom_function = d3.zoom().scaleExtent([ 0.1, 100 ]).on('zoom', () => {
 	context.restore();
 	dragging = false;
 });
+// Eventhandler für Drag und Zoom
 canvasChart.call(zoom_function);
