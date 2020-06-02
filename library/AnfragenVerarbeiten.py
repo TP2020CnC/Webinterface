@@ -11,6 +11,7 @@
 # Der AnfrageVerarbeiter ist zentrales Element unserer Architektur und verarbeitet sowohl Anfragen von lokalen Programmen, wie
 # auch vom ESP und vom Roboter selbst. 
 # Von hier aus werden alle Programme bis auf die views.py aufgerufen und am laufen gehalten.
+#
 
 import json
 import os

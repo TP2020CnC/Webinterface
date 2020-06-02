@@ -10,7 +10,7 @@ Routes and views for the flask application.
 # Erstellt: 2020-05-20
 # Letzte Änderung: 2020-06-2
 #
-# In Views befinden sich alle Routen, die Über den Webserver erreichbar sind.
+# In Views befinden sich alle Routen, die über den Webserver erreichbar sind.
 # Auch die APIs sind hier erreichbar und werden über den Übergabeparameter robot_mode angesprochen.
 #
 
@@ -101,7 +101,7 @@ def Fehler():
 # Vorselektiert durch Methode und bestimmt so die Übergabeparameter
 @app.route('/api/<string:robot_mode>', methods=['PUT', 'GET', 'POST'])
 def sendInstruction(robot_mode):
-    #Wenn Standardroute nicht erreichbar redirect zur Fehlerseite
+    # Wenn Standardroute nicht erreichbar redirect zur Fehlerseite
     siteAvailable = urlOk(url)
     if siteAvailable == False:
         return redirect(url_for('Fehler'))
