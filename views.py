@@ -5,7 +5,7 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import Flask, url_for, request, redirect, jsonify, make_response, render_template
 from Webinterface import app
-from Webinterface.library.SteuerungGenerieren import AnfrageVerarbeiter
+from Webinterface.library.AnfragenVerarbeiten import AnfrageVerarbeiter
 from Webinterface.library.pngZeichner import pngZeichner
 from Webinterface.library.KartenParser import Parser
 import json
@@ -28,11 +28,10 @@ def urlOk(url):
 # Properties
 ########################################################################################################
 #URL-Roboter
-#url = "http://178.202.120.28:8090"
-url = "http://192.168.0.95"
+url = "http://178.202.120.28:8090"
+#url = "http://192.168.0.95"
 #url = "http://192.168.0.237"
 siteAvailable = True
-#Exceptionhandling Roboter nicht erreichbar
 dirname = os.path.dirname(__file__)
 mapFolder = os.path.join(dirname, "static/maps/")
 dbLocation = os.path.join(dirname, "static/maps/messdaten.db")
@@ -53,10 +52,9 @@ def Steuerung2():
     if siteAvailable == False:
         return redirect(url_for('Fehler'))
     return render_template(
-        'Steuerung.html',
-        title='Steuerung'
+    'Steuerung.html',
+    title='Steuerung'
     )
-
 
 @app.route('/Karte', methods=['GET'])
 def Karte():
@@ -78,7 +76,6 @@ def Fehler():
         'Fehler.html',
         title='Verbindungsfehler'
     )
-
 @app.route('/api/<string:robot_mode>', methods=['PUT', 'GET', 'POST'])
 def sendInstruction(robot_mode):
     #Wenn Standardroute nicht erreichbar redirect zur Fehlerseite
