@@ -39,9 +39,9 @@ class Parser:
 #
 # Schmutztoleranz und ausbreitungszerfall
 #
-        self.PRIM_DECAY = 0.92
-        self.SEC_DECAY = 0.9
-        self.TOLERANCE = 6500
+        self.PRIM_DECAY = 0.87
+        self.SEC_DECAY = 0.8
+        self.TOLERANCE = 7100
 #
 # Konfiguration der Karte
 #
