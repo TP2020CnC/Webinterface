@@ -33,7 +33,6 @@ import requests
 class KartenUpdater:
     def __init__(self, file_path, url):
         self.mds = MessdatenSammler(file_path)
-        self.png = pngZeichner(file_path)
         self.par = Parser(file_path)
         self.FILE_PATH = file_path
         self.url = url

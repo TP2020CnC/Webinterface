@@ -425,7 +425,7 @@ class Parser:
             # Gitter anlegen
             for coordinate in floor:
                 if coordinate[0] % 2 == 1 and coordinate[1] % 2 == 1:
-                    spot = [coordinate[0], coordinate[1]]
+                    spot = [(coordinate[0], coordinate[1]), 0]
                     spotGrid.append(spot)
 
             # Dreck einlesen
