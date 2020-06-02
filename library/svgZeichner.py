@@ -7,8 +7,7 @@
 # Erstellt: 2020-05-29
 # Letzte Änderung: 2020-05-29
 #
-# Der svgZeichner ist dafür zuständig aus dem JSON ein PNG zu erstellen.
-# Das PNG wird mit einer fortlaufenden Nummer im Dateinamen gespeichert.
+# Der svgZeichner ist dafür zuständig aus dem JSON eine Vektorgrafik zu erstellen.
 # Das Verzeichnis wird im Konstruktor der Klasse mitgegeben. Im Fromat: "foo/bar/verzeichnis/"
 #
 
@@ -83,7 +82,6 @@ class svgZeichner:
         """
         Karte als .png bauen
 
-        :dict mapDict:		Kartendaten als dict
         :bool drawHeat:		Soll heat map zeichnen
         :bool drawPath:		Soll Pfad zeichnen
         :return:			-
@@ -173,20 +171,20 @@ class svgZeichner:
         svgImage.saveSvg(self.FILE_PATH + "karte.svg")
 # #####################################################
 
-####
-    def ImageBuilderDebug(self, drawPath, drawHeat):
-        start_time = time.time()  # Debug: Zeit starten
+# ####
+#     def ImageBuilderDebug(self, drawPath, drawHeat):
+#         start_time = time.time()  # Debug: Zeit starten
 
-        self.isDebugging = True
+#         self.isDebugging = True
 
-        self.ImageBuilder(drawPath, drawHeat)
+#         self.ImageBuilder(drawPath, drawHeat)
 
-        print("--- %s seconds --- --- PNG ---" %  (time.time() - start_time))  # Debug: Zeit stoppen
-        sys.stdout.flush()
-#####################################################
+#         print("--- %s seconds --- --- PNG ---" %  (time.time() - start_time))  # Debug: Zeit stoppen
+#         sys.stdout.flush()
+# #####################################################
 
 
-####
-if __name__ == "__main__":
-    png = svgZeichner("C:\\test\\")
-    png.ImageBuilderDebug(True, True)
+# ####
+# if __name__ == "__main__":
+#     png = svgZeichner("C:\\test\\")
+#     png.ImageBuilderDebug(True, True)

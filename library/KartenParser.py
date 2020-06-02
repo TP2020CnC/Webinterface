@@ -5,7 +5,7 @@
 # Betrieb: COUNT+CARE
 # Autor: Yannik Seitz
 # Erstellt: 2020-05-20
-# Letzte Änderung: 2020-05-29
+# Letzte Änderung: 2020-06-02
 #
 # Der Parser ist dafür zuständig die karte.gz zu enpacken und die rr-Formatierten Binärdaten aufzugliedern.
 # Das Ergebnis wird als JSON im selben Verzeichnis gespeichert.
@@ -20,9 +20,6 @@ import shutil
 import struct
 import sys
 import time
-from builtins import print
-
-from werkzeug.debug import console
 
 
 ####
@@ -37,15 +34,14 @@ class Parser:
         self.FILE_PATH = file_path
 
 #
-# Schmutztoleranz und ausbreitungszerfall
+# Schmutztoleranz und Ausbreitungszerfall
 #
-        self.PRIM_DECAY = 0.87
+        self.PRIM_DECAY = 0.87 
         self.SEC_DECAY = 0.8
         self.TOLERANCE = 7100
 #
 # Konfiguration der Karte
 #
-        self.FILE_PATH = file_path
         self.SCALE_FACTOR = 4
         self.CROP = False
         self.DRAW_NO_GO_AREAS = True
@@ -96,7 +92,7 @@ class Parser:
 
 ####
 #
-# Bytes in Inegers umwandeln
+# Bytes in Integers umwandeln
 #
     def GetUInt8(self, bytes, offset):
         return struct.unpack('B', self.GetBytes(bytes, offset, 1))[0]
@@ -112,14 +108,15 @@ class Parser:
 #####################################################
 
 ####
-    def ParseBlock(self, bytes, offset, result, fileLength, fastMode):
+    def ParseBlock(self, fileBytes, offset, result, fileLength, fastMode):
         """
         Kartenblöcke errechnen (Rekursiv)
 
-        :bytes bytes:		Kartendaten als bytes
-        :int offset:		Forschritt des byte lesens
+        :bytes fileBytes:	Kartendaten als bytes
+        :int offset:		Forschritt des Lesens
         :dict result:		dict mit Daten des aktuellen Fortschrittes
         :int fileLength:	Laenge der Kartendaten
+        :bool fastMode:     Nur Roboterpostion ausgeben
         :return:			result
         :return:			ParseBlock(bytes, offset, result, fileLength)
         """
@@ -127,33 +124,33 @@ class Parser:
             return result
 
         g3offset = 0
-        switch = self.GetUInt16LE(bytes, 0x00 + offset)
-        hlength = self.GetUInt16LE(bytes, 0x02 + offset)
-        length = self.GetUInt32LE(bytes, 0x04 + offset)
+        switch = self.GetUInt16LE(fileBytes, 0x00 + offset)
+        hlength = self.GetUInt16LE(fileBytes, 0x02 + offset)
+        length = self.GetUInt32LE(fileBytes, 0x04 + offset)
 
-        type = self.Switch(switch)
+        blockType = self.Switch(switch)
 
         # ROBOT_POSITION
         # CHARGER_LOCATION
-        if type == "ROBOT_POSITION" or type == "CHARGER_LOCATION":
+        if blockType == "ROBOT_POSITION" or blockType == "CHARGER_LOCATION":
             if length >= 12:
-                angle = self.GetInt32LE(bytes, 0x10 + offset)
+                angle = self.GetInt32LE(fileBytes, 0x10 + offset)
             else:
                 angle = 0
-            result[type] = {
-                "position": [self.GetUInt16LE(bytes, 0x08 + offset),
-                             self.GetUInt16LE(bytes, 0x0c + offset)],
+            result[blockType] = {
+                "position": [self.GetUInt16LE(fileBytes, 0x08 + offset),
+                             self.GetUInt16LE(fileBytes, 0x0c + offset)],
                 "angle": angle
             }
-            if fastMode and type == "ROBOT_POSITION":
+            if fastMode and blockType == "ROBOT_POSITION":
                 return result
 
         # IMAGE
-        elif type == "IMAGE":
+        elif blockType == "IMAGE":
             if hlength > 24:
                 g3offset = 4
             if g3offset:
-                count = self.GetInt32LE(bytes, 0x08 + offset)
+                count = self.GetInt32LE(fileBytes, 0x08 + offset)
             else:
                 count = 0
             parameters = {
@@ -162,12 +159,12 @@ class Parser:
                     "if": []
                 },
                 "position": {
-                    "top": self.GetInt32LE(bytes, 0x08 + g3offset + offset),
-                    "left": self.GetInt32LE(bytes, 0x0c + g3offset + offset)
+                    "top": self.GetInt32LE(fileBytes, 0x08 + g3offset + offset),
+                    "left": self.GetInt32LE(fileBytes, 0x0c + g3offset + offset)
                 },
                 "dimensions": {
-                    "height": self.GetInt32LE(bytes, 0x10 + g3offset + offset),
-                    "width": self.GetInt32LE(bytes, 0x14 + g3offset + offset)
+                    "height": self.GetInt32LE(fileBytes, 0x10 + g3offset + offset),
+                    "width": self.GetInt32LE(fileBytes, 0x14 + g3offset + offset)
                 },
                 "pixels": {
                     "floor": [],
@@ -183,7 +180,7 @@ class Parser:
                 i = 0
                 s = 0
                 while i < length:
-                    val = self.GetUInt8(bytes, 0x18 + g3offset + offset + i)
+                    val = self.GetUInt8(fileBytes, 0x18 + g3offset + offset + i)
                     if (val & 0x07) == 0:
                         i += 1
                         continue
@@ -199,124 +196,124 @@ class Parser:
                             if s not in parameters["pixels"]["segments"]:
                                 parameters["pixels"]["segments"][s] = []
                             parameters["pixels"]["segments"][s].append(coords)
-            if type in result:
-                result[type].append(parameters)
+            if blockType in result:
+                result[blockType].append(parameters)
             else:
-                result[type] = parameters
+                result[blockType] = parameters
 
         # PATH
         # GOTO_PATH
         # GOTO_PREDICTED_PATH
-        elif type == "PATH" or type == "GOTO_PATH" or type == "GOTO_PREDICTED_PATH":
+        elif blockType == "PATH" or blockType == "GOTO_PATH" or blockType == "GOTO_PREDICTED_PATH":
             points = []
             i = 0
             while i < length:
                 points.append([
-                    self.GetUInt16LE(bytes, 0x14 + offset + i),
-                    self.GetUInt16LE(bytes, 0x14 + offset + i + 2)
+                    self.GetUInt16LE(fileBytes, 0x14 + offset + i),
+                    self.GetUInt16LE(fileBytes, 0x14 + offset + i + 2)
                 ])
                 i += 4
-            current_angle = self.GetUInt32LE(bytes, 0x10 + offset)
+            current_angle = self.GetUInt32LE(fileBytes, 0x10 + offset)
 
-            result[type] = {
+            result[blockType] = {
                 "points": points,
                 "current_angle": current_angle
             }
 
         # GOTO_TARGET
-        elif type == "GOTO_TARGET":
-            result[type] = {
+        elif blockType == "GOTO_TARGET":
+            result[blockType] = {
                 "position": [
-                    self.GetUInt32LE(bytes, 0x08 + g3offset + offset),
-                    self.GetUInt32LE(bytes, 0x0a + g3offset + offset)
+                    self.GetUInt32LE(fileBytes, 0x08 + g3offset + offset),
+                    self.GetUInt32LE(fileBytes, 0x0a + g3offset + offset)
                 ]
             }
 
         # CURRENTLY_CLEANED_ZONES
-        elif type == "CURRENTLY_CLEANED_ZONES":
-            zoneCount = self.GetUInt32LE(bytes, 0x08 + offset)
+        elif blockType == "CURRENTLY_CLEANED_ZONES":
+            zoneCount = self.GetUInt32LE(fileBytes, 0x08 + offset)
             zones = []
             if zoneCount > 0:
                 i = 0
                 while i < length:
                     zones.append([
-                        self.GetUInt16LE(bytes, 0x0c + offset + i),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 2),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 4),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 6)])
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 2),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 4),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 6)])
                     i += 8
-            if type in result:
-                result[type].append(zones)
+            if blockType in result:
+                result[blockType].append(zones)
             else:
-                result[type] = zones
+                result[blockType] = zones
 
         # FORBIDDEN_ZONES
-        elif type == "FORBIDDEN_ZONES":
-            forbiddenZoneCount = self.GetUInt32LE(bytes, 0x08 + offset)
+        elif blockType == "FORBIDDEN_ZONES":
+            forbiddenZoneCount = self.GetUInt32LE(fileBytes, 0x08 + offset)
             forbiddenZones = []
             if forbiddenZoneCount > 0:
                 i = 0
                 while i < length:
                     forbiddenZones.append([
-                        self.GetUInt16LE(bytes, 0x0c + offset + i),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 2),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 4),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 6),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 8),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 10),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 12),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 14),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 2),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 4),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 6),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 8),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 10),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 12),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 14),
                     ])
                     i += 16
-            if type in result:
-                result[type].append(forbiddenZones)
+            if blockType in result:
+                result[blockType].append(forbiddenZones)
             else:
-                result[type] = forbiddenZones
+                result[blockType] = forbiddenZones
 
         # VIRTUAL_WALLS
-        elif type == "VIRTUAL_WALLS":
-            wallCount = self.GetUInt32LE(bytes, 0x08 + offset)
+        elif blockType == "VIRTUAL_WALLS":
+            wallCount = self.GetUInt32LE(fileBytes, 0x08 + offset)
             walls = []
             if wallCount > 0:
                 while i < length:
                     walls.append([
-                        self.GetUInt16LE(bytes, 0x0c + offset + i),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 2),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 4),
-                        self.GetUInt16LE(bytes, 0x0c + offset + i + 6)
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 2),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 4),
+                        self.GetUInt16LE(fileBytes, 0x0c + offset + i + 6)
                     ])
                     i += 8
-            if type in result:
-                result[type].append(walls)
+            if blockType in result:
+                result[blockType].append(walls)
             else:
-                result[type] = walls
+                result[blockType] = walls
 
         # CURRENTLY_CLEANED_BLOCKS
-        elif type == "CURRENTLY_CLEANED_BLOCKS":
-            blockCount = self.GetUInt32LE(bytes, 0x08 + offset)
+        elif blockType == "CURRENTLY_CLEANED_BLOCKS":
+            blockCount = self.GetUInt32LE(fileBytes, 0x08 + offset)
             blocks = []
             if blockCount > 0:
                 while i < length:
                     blocks.append(
-                        [self.self.GetUInt8(bytes, 0x0c + offset + i)])
+                        [self.self.GetUInt8(fileBytes, 0x0c + offset + i)])
                     i += 1
-            if type in result:
-                result[type].append(blocks)
+            if blockType in result:
+                result[blockType].append(blocks)
             else:
-                result[type] = blocks
+                result[blockType] = blocks
 
         # DIGEST
-        elif type == "DIGEST":
+        elif blockType == "DIGEST":
             pass
 
         else:
             pass
 
-        return self.ParseBlock(bytes, offset + length + hlength, result, fileLength, fastMode)
+        return self.ParseBlock(fileBytes, offset + length + hlength, result, fileLength, fastMode)
 #####################################################
 
 ####
-    def Parse(self, blocks, file):
+    def Parse(self, blocks, fileBytes):
         """
         Karte analysieren
 
@@ -325,14 +322,14 @@ class Parser:
         :return:			parsedMapData
         """
         parsedMapData = {
-            "header_length": self.GetUInt16LE(file, 0x02),
-            "data_length": self.GetUInt16LE(file, 0x04),
+            "header_length": self.GetUInt16LE(fileBytes, 0x02),
+            "data_length": self.GetUInt16LE(fileBytes, 0x04),
             "version": {
-                "major": self.GetUInt16LE(file, 0x08),
-                "minor": self.GetUInt16LE(file, 0x0A)
+                "major": self.GetUInt16LE(fileBytes, 0x08),
+                "minor": self.GetUInt16LE(fileBytes, 0x0A)
             },
-            "map_index": self.GetUInt16LE(file, 0x0C),
-            "map_sequence": self.GetUInt16LE(file, 0x10)
+            "map_index": self.GetUInt16LE(fileBytes, 0x0C),
+            "map_sequence": self.GetUInt16LE(fileBytes, 0x10)
         }
 
         # IMAGE
@@ -428,7 +425,7 @@ class Parser:
             # Gitter anlegen
             for coordinate in floor:
                 if coordinate[0] % 2 == 1 and coordinate[1] % 2 == 1:
-                    spot = [coordinate[0], coordinate[1]]
+                    spot = [(coordinate[0], coordinate[1]), 0]
                     spotGrid.append(spot)
 
             # Dreck einlesen
@@ -468,9 +465,9 @@ class Parser:
             shutil.copyfileobj(f_in, f_out)
             #print(os.path.getmtime(self.FILE_PATH + "karte.gz"))
 
-        file = open(self.FILE_PATH + "karte", 'rb+')
+        fileBytes = open(self.FILE_PATH + "karte", 'rb+')
         fileLength = os.path.getsize(self.FILE_PATH + "karte")
-        return [file, fileLength]
+        return [fileBytes, fileLength]
 #####################################################
 
 ####
@@ -482,15 +479,15 @@ class Parser:
         """
         parsedMapData = {}
         unpacked = self.Unpack()
-        file = unpacked[0]
+        fileBytes = unpacked[0]
         fileLength = unpacked[1]
-        if self.GetBytes(file, 0, 1) == b'\x72' and self.GetBytes(file, 1, 1) == b'\x72':
-            blocks = self.ParseBlock(file, 0x14, {}, fileLength, True)
+        if self.GetBytes(fileBytes, 0, 1) == b'\x72' and self.GetBytes(fileBytes, 1, 1) == b'\x72':
+            blocks = self.ParseBlock(fileBytes, 0x14, {}, fileLength, True)
             if "ROBOT_POSITION" in blocks:
                 parsedMapData["robot"] = blocks["ROBOT_POSITION"]["position"]
                 parsedMapData["robot"][1] = self.DIMENSION_MM - \
                     parsedMapData["robot"][1]
-        file.close()
+        fileBytes.close()
         return parsedMapData
 #####################################################
 
@@ -498,35 +495,35 @@ class Parser:
     def BuildJSON(self, drawDirt):
         """
         Programmstart, erstellt JSON
-
-        :return:		-
+        :bool drawDirt:     Ob Verschmutzungsdaten hinzugefügt werden soll
+        :return:		    -
         """
         if os.path.exists(self.FILE_PATH + "karte.gz"):
             unpacked = self.Unpack()
-            file = unpacked[0]
+            fileBytes = unpacked[0]
             fileLength = unpacked[1]
-            if self.GetBytes(file, 0, 1) == b'\x72' and self.GetBytes(file, 1, 1) == b'\x72':
-                blocks = self.ParseBlock(file, 0x14, {}, fileLength, False)
-                mapData = self.Parse(blocks, file)
+            if self.GetBytes(fileBytes, 0, 1) == b'\x72' and self.GetBytes(fileBytes, 1, 1) == b'\x72':
+                blocks = self.ParseBlock(fileBytes, 0x14, {}, fileLength, False)
+                mapData = self.Parse(blocks, fileBytes)
                 if drawDirt:
                     mapData = self.BuildDirt(mapData)
                 with open(self.FILE_PATH + "karte.json", "w") as write_file:
                     json.dump(mapData, write_file)
-            file.close()
+            fileBytes.close()
 #####################################################
 
-####
-    def BuildJsonDebug(self, drawDirt):
-        start_time = time.time()  # Debug: Zeit starten
+# #### # Debug
+#     def BuildJsonDebug(self, drawDirt): # Debug
+#         start_time = time.time()  # Debug: Zeit starten
 
-        self.BuildJSON(drawDirt)
+#         self.BuildJSON(drawDirt)
 
-        print("--- %s seconds --- JSON ---" % (time.time() - start_time))  # Debug: Zeit stoppen
-        sys.stdout.flush()
-#####################################################
+#         print("--- %s seconds --- JSON ---" % (time.time() - start_time))  # Debug: Zeit stoppen
+#         sys.stdout.flush()
+# #####################################################
 
 
-####
-if __name__ == "__main__":
-    karte = Parser("C:\\test\\")
-    karte.BuildJsonDebug()
+# #### # Debug
+# if __name__ == "__main__": # Debug
+#     karte = Parser("C:\\test\\")
+#     karte.BuildJsonDebug()
