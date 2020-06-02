@@ -30,9 +30,9 @@ from flask import (Flask, Response, jsonify, make_response, redirect,
 from Webinterface import app
 from Webinterface.library.DatenbankVerwalten import \
     DatenbankVerwalter as database
-from Webinterface.library.KartenUpdater import KartenDebugger, KartenUpdater
+from Webinterface.library.KartenUpdater import KartenUpdater
 
-_KILL = True
+_KILL = True # Bestimmt ob Worker-ThreadPool gestoppt werden soll
 
 # Hält Updatevorgang am laufen -> Karte für Weboberfläche
 def Worker_KartenUpdater(path, url):
@@ -42,38 +42,25 @@ def Worker_KartenUpdater(path, url):
     running = False
     while 1:
         repeatCounter += 1
-        if _KILL:
+        if _KILL: # Soll Worker-ThreadPool gestoppt werden?
             break
         try:
-            if running: 
+            if running: # Roboter laeft?
                 ku.UpdateDreck()
-            if repeatCounter % 10 == 0:
+            if repeatCounter % 10 == 0: # ALle 10 Durchgaenge einmal
                 ku.UpdateJSON()
-
+                
+                # Pruefen ob die Roboter am reinigen ist
                 response = urlopen(url + "/api/current_status")
                 string = response.read().decode('utf-8')
                 currState = json.loads(string) 
-                if currState["human_state"] == "Cleaning":
+                if currState["human_state"] == "Cleaning": 
                     running = True
                 else:
                     running = False
         except Exception as e:
             print(e)
     return
-
-# def Worker_KartenDebugger(path): # DEBUG # DEBUG # DEBUG 
-#     """thread worker function"""
-#     kd = KartenDebugger(path)
-#     while 1:
-#         if _KILL:
-#             break
-#         try:
-#             kd.InsertDebugDirt()
-#             time.sleep(0.2)
-#         except Exception as e:
-#             print(e)
-#     return
-
 
 class AnfrageVerarbeiter(object):
     """Diese Klasse generiert Aktionen, die auf Nutzereingaben zurückführen"""
