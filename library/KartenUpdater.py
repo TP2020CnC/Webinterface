@@ -76,7 +76,7 @@ class KartenUpdater:
         r = requests.get(self.url + "/api/map/latest")
         open(self.FILE_PATH + "karte.gz", 'wb+').write(r.content)
 
-
+# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG# DEBUG
 class KartenDebugger:   # DEBUG
     def __init__(self, file_path):
         self.db = DatenbankVerwalter()
