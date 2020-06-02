@@ -1,11 +1,19 @@
+#
+# Name: DatenbankVerwalten.py
+# Projekt: FS4V Abschlussprojekt Staubsaugerroboter
+# Schule: Heinrich-Emanuel-Merck-Schule
+# Betrieb: COUNT+CARE
 # Autor: Robin Schepp
-##############import#################
+# Erstellt: 2020-05-20
+# Letzte Änderung: 2020-06-2
+#
+# Der DatenbankVerwalter kümmert sich um Die Datenbankdatei messdaten.db, pflegt neue Datensetze ein und löscht alte
+#
 import json
 import sqlite3
 import time
 from builtins import print
 from socket import create_connection
-
 
 class DatenbankVerwalter:
 
@@ -55,22 +63,23 @@ class DatenbankVerwalter:
         cur = conn.cursor()
         cur.execute(sql, task)
 
-
-    # erstelle unix Zeitstempel
+    # Erstelle unix Zeitstempel
     def current_milli_time(self):
         return int(round(time.time() * 1000))
     
-    # erstellt eintrag
+    # Erstellt Eintrag
     def updateDatabase(self, db_file, jsonString):
+        # Verbindung aufbauen
         conn = self.createConnection(db_file)
+        # Liste erzeugen, welche einen Datensatz enthält
         task = []
-        i = 0
         task.append(jsonString["typ"])
         task.append(jsonString["sensornummer"])
         task.append(self.current_milli_time())
         #task.append(jsonString["millisekunden"])
         task.append(jsonString["messwert"])
         print(task)
+        # Versuche Daten einzupflegen, wenn nicht möglich, erstelle eineneue Tabelle und pflege den Datensatz ein
         try:
             self.insertData(conn, task)
         except Exception as e:
@@ -79,8 +88,7 @@ class DatenbankVerwalter:
         conn.commit()
         conn.close()
 
-
-####
+    # Gibt Dreckdaten zurück
     def GetDreck(self, dreckConn, lastTime):
         myTime = self.current_milli_time()
         c = dreckConn.cursor()
@@ -105,20 +113,21 @@ class DatenbankVerwalter:
         print(c.fetchone())
         dreckConn.close()
         if hasResult == True: return mini
-#####################################################
 
-
-    #schreibt Testdaten
+    # Schreibt Testdaten
     def insertTestData(self, db_file):
+        # Verbindung aufbauen
         conn = self.createConnection(db_file)
+        # Liste erzeugen, welche einen Testdatensatz bekommt
         task = []
-        i = 0
+        # Es folgen Testdaten
         task.append("test")
         task.append("4")
         task.append(self.current_milli_time())
         #task.append(jsonString["millisekunden"])
         task.append(11000)
         print(task)
+        # Versuche Daten einzupflegen, wenn nicht möglich, erstelle eineneue Tabelle und pflege den Datensatz ein
         try:
             self.insertData(conn, task)
         except Exception as e:
@@ -127,7 +136,7 @@ class DatenbankVerwalter:
         conn.commit()
         conn.close()
 
-    # löscht alle einträge eines tables
+    # Löscht alle Einträge eines tables
     def delTable(self, db_file):
         conn = self.createConnection(db_file)
         try:
