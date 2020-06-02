@@ -144,7 +144,7 @@ var vacuum = new Image();
 vacuum.src = 'static/maps/assets/robot.svg';
 
 wallColor = '#00ff40';
-ICON_SIZE = 16;
+ICON_SIZE = 24;
 margin = { top: 1, right: 1, bottom: 1, left: 1 };
 var help = document.getElementById("mapBox");
 // outerWidth = help.width;
@@ -246,8 +246,8 @@ function drawRobot(scaleX, scaleY, k) {
 			//context.rotate(current_angle); // rotate
 			context.drawImage(
 				vacuum,
-				px - Math.round(ICON_SIZE / 2) * k,
-				py - Math.round(ICON_SIZE / 2) * k,
+				(px - Math.round(ICON_SIZE / 2)) * k,
+				(py - Math.round(ICON_SIZE / 2)) * k,
 				ICON_SIZE * k,
 				ICON_SIZE * k
 			);
@@ -266,8 +266,8 @@ function drawCharger(scaleX, scaleY, k) {
 		if (d_station) {
 			context.drawImage(
 				d_station,
-				px - Math.round(ICON_SIZE / 2) * k,
-				py - Math.round(ICON_SIZE / 2) * k,
+				(px - Math.round(ICON_SIZE / 2)) * k,
+				(py - Math.round(ICON_SIZE / 2)) * k,
 				ICON_SIZE * k,
 				ICON_SIZE * k
 			);
@@ -322,10 +322,10 @@ function drawDirt(scaleX, scaleY, k) {
 	dirt.forEach((spot) => {
 		const px = scaleX(spot[0][0]);
 		const py = scaleY(spot[0][1]);
-		if (dirt[1] > 9700){
+		if (dirt[1] > 7000){
 			context.fillStyle = '#e60000';
 		}			
-		else if (dirt[1] > 9500){
+		else if (dirt[1] > 6500){
 			context.fillStyle = '#ff8614';
 		}
 		else{
