@@ -325,10 +325,10 @@ function drawDirt(scaleX, scaleY, k) {
 	dirt.forEach((spot) => {
 		const px = scaleX(spot[0][0]);
 		const py = scaleY(spot[0][1]);
-		if (dirt[1] > 7500){
+		if (spot[1] > 7500){
 			context.fillStyle = '#e60000';
 		}			
-		else if (dirt[1] > 6500){
+		else if (spot[1] > 6500){
 			context.fillStyle = '#ff8614';
 		}
 		else{
