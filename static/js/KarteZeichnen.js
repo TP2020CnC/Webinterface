@@ -197,7 +197,8 @@ loadData();
 
 // Es wird gecheckt, ob Dreckdaten angezeigt werden sollen
 function dirtOrNoDirt() {
-	var helper = document.getElementById('toggle');
+	// var helper = document.getElementById('toggle');
+	var helper = document.getElementById('ckbx-style-9-1');
 	if (helper.checked) {
 		return true;
 	} else {
