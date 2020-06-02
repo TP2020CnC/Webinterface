@@ -428,7 +428,7 @@ class Parser:
             # Gitter anlegen
             for coordinate in floor:
                 if coordinate[0] % 2 == 1 and coordinate[1] % 2 == 1:
-                    spot = [(coordinate[0], coordinate[1]), 360]
+                    spot = [coordinate[0], coordinate[1]]
                     spotGrid.append(spot)
 
             # Dreck einlesen
@@ -442,32 +442,16 @@ class Parser:
                         pos[1] = pos[1] - 1
                     if pos in floor:
                         dirtSpots.append([(pos[0], pos[1]), dreck[1]])
+                        
 
             # Primaere Schmutzpunkte verteilen
             for spot in spotGrid:
                 for dirt in dirtSpots:
                     test = spot[0]
                     target = dirt[0]
-                    if (test[0], test[1]) == target:
-                       if dirt[1] > self.TOLERANCE:
-                           spot[1] = dirt[1]
-                           primSpots.append(spot)
-                    if (test[0] - 2, test[1]) == target or (test[0] + 2, test[1]) == target or (test[0], test[1] - 2) == target or (test[0], test[1] + 2) == target:
-                        if ((int)(dirt[1]) * self.PRIM_DECAY) > self.TOLERANCE:
-                            if spot[1] != 360:
-                                if spot[1] > dirt[1]:
-                                    spot[1] = dirt[1]
-                            else:
-                                spot[1] = ((int)(dirt[1]) * self.PRIM_DECAY)
-                            primSpots.append(spot)
-                    if (test[0] - 2, test[1] - 2) == target or (test[0] + 2, test[1] + 2) == target or (test[0] + 2, test[1] - 2) == target or (test[0] - 2, test[1] + 2) == target:
-                        if ((int)(dirt[1]) * self.SEC_DECAY) > self.TOLERANCE:
-                            if spot[1] != 360:
-                                if spot[1] > dirt[1]:
-                                    spot[1] = dirt[1]
-                            else:
-                                spot[1] = ((int)(dirt[1]) * self.SEC_DECAY)
-                            primSpots.append(spot)
+                    if (test[0], test[1]) == target and dirt[1] > self.TOLERANCE and spot[1] < dirt[1]:
+                        spot[1] = dirt[1]
+                        primSpots.append(spot)
             parsedMapData["dirt"] = primSpots
         return parsedMapData
 
