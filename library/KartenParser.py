@@ -41,7 +41,7 @@ class Parser:
 #
         self.PRIM_DECAY = 0.92
         self.SEC_DECAY = 0.9
-        self.TOLERANCE = 9000
+        self.TOLERANCE = 6500
 #
 # Konfiguration der Karte
 #
