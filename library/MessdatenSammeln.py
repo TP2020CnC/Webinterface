@@ -66,7 +66,7 @@ class MessdatenSammler:
         dreckConn = sqlite3.connect(self.FILE_PATH + "messdaten.db")
         dreck = self.db.GetDreck(dreckConn, self.lastTime)
         self.lastTime = self.current_milli_time()
-        if dreck is not None and dreck > 6500:
+        if dreck is not None and dreck > 7100:
             print("Einfügen:")  # Debug # Debug # Debug
             print(dreck)  # Debug # Debug # Debug
             self.InsertDreck(dreck, roboPos)        
