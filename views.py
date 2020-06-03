@@ -41,8 +41,8 @@ def urlOk(url):
 # Properties
 ########################################################################################################
 # URL-Roboter
-url = "http://178.202.120.28:8090"
-#url = "http://192.168.0.95"
+#url = "http://178.202.120.28:8090"
+url = "http://192.168.0.95"
 #url = "http://192.168.0.237"
 # Hilfvariable Roboter erreichbar
 siteAvailable = True
