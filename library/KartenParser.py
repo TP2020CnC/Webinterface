@@ -449,6 +449,8 @@ class Parser:
                     if (test[0], test[1]) == target and dirt[1] > self.TOLERANCE and spot[1] < dirt[1]:
                         spot[1] = dirt[1]
                         primSpots.append(spot)
+
+            # Schmutzausbreitung (deaktiviert für kleine Testbox)
                     # if (test[0] - 2, test[1]) == target or (test[0] + 2, test[1]) == target or (test[0], test[1] - 2) == target or (test[0], test[1] + 2) == target:
                     #     if ((int)(dirt[1]) * self.PRIM_DECAY) > self.TOLERANCE:
                     #         if spot[1] != 360:
@@ -465,6 +467,7 @@ class Parser:
                     #         else:
                     #             spot[1] = ((int)(dirt[1]) * self.SEC_DECAY)
                     #         primSpots.append(spot)
+                    
             parsedMapData["dirt"] = primSpots
         return parsedMapData
 
