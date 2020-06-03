@@ -467,7 +467,7 @@ class Parser:
                     #         else:
                     #             spot[1] = ((int)(dirt[1]) * self.SEC_DECAY)
                     #         primSpots.append(spot)
-                    
+
             parsedMapData["dirt"] = primSpots
         return parsedMapData
 
@@ -492,9 +492,9 @@ class Parser:
 ####
     def GetRoboPos(self):
         """
-        Programmstart, erstellt JSON
+        Programmstart, gibt nur Position zurück
 
-        :return:		-
+        :return:		Roboterkoordinaten
         """
         parsedMapData = {}
         unpacked = self.Unpack()
