@@ -1,5 +1,5 @@
 #
-# Name: kartenUpdate.py.py
+# Name: KartenUpdater.py
 # Projekt: FS4V Abschlussprojekt Staubsaugerroboter
 # Schule: Heinrich-Emanuel-Merck-Schule
 # Betrieb: COUNT+CARE

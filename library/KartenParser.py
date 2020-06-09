@@ -531,18 +531,18 @@ class Parser:
             fileBytes.close()
 #####################################################
 
-# #### # Debug
-#     def BuildJsonDebug(self, drawDirt): # Debug
-#         start_time = time.time()  # Debug: Zeit starten
+#### # Debug
+    def BuildJsonDebug(self, drawDirt): # Debug
+        start_time = time.time()  # Debug: Zeit starten
 
-#         self.BuildJSON(drawDirt)
+        self.BuildJSON(drawDirt)
 
-#         print("--- %s seconds --- JSON ---" % (time.time() - start_time))  # Debug: Zeit stoppen
-#         sys.stdout.flush()
-# #####################################################
+        print("--- %s seconds --- JSON ---" % (time.time() - start_time))  # Debug: Zeit stoppen
+        sys.stdout.flush()
+#####################################################
 
 
-# #### # Debug
-# if __name__ == "__main__": # Debug
-#     karte = Parser("C:\\test\\")
-#     karte.BuildJsonDebug()
+#### # Debug
+if __name__ == "__main__": # Debug
+    karte = Parser("C:\\test\\")
+    karte.BuildJsonDebug(True)
